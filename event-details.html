@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details | ISTE Telangana</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #FF6B35;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F7FA;
+            --text-primary: #1A1A2E;
+            --text-secondary: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            color: var(--text-primary);
+            background: var(--bg-light);
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Navigation */
+        .main-nav {
+            background: var(--bg-white);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 65px;
+            height: 65px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-text span {
+            color: var(--secondary);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-menu a {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: var(--secondary);
+        }
+
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .mobile-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        /* Hero Banner */
+        .event-hero {
+            margin-top: 0;
+            height: 400px;
+            background: linear-gradient(135deg, var(--primary), #004080);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .event-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 51, 102, 0.9), transparent);
+        }
+
+        .event-hero-content {
+            position: relative;
+            z-index: 1;
+            padding: 40px;
+            color: white;
+            width: 100%;
+        }
+
+        .event-type-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .event-hero h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .event-meta-info {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+
+        /* Content */
+        .content-wrapper {
+            padding: 50px 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+
+        .main-content {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .event-description {
+            line-height: 1.8;
+            color: var(--text-secondary);
+            font-size: 16px;
+            white-space: pre-line;
+        }
+
+        /* Gallery */
+        .event-gallery {
+            margin-top: 40px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 16/9;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .sidebar-card {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .sidebar-card h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .detail-text {
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .register-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--secondary);
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .register-btn:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+
+        .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            border: 3px solid var(--bg-light);
+            border-top: 3px solid var(--secondary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .event-hero {
+                height: 300px;
+            }
+
+            .event-hero h1 {
+                font-size: 28px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img class="logo-icon" src="/images/istelogo.jpg" alt="ISTE Logo">
+                <div class="logo-text">ISTE <span>Telangana</span></div>
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="awards.html">Awards</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="notifications.html">Notifications</a></li>
+                <li><a href="committee.html">Committee</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="mobile-toggle" id="mobileToggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Event Hero -->
+    <section class="event-hero" id="eventHero">
+        <div class="event-hero-overlay"></div>
+        <div class="event-hero-content container">
+            <span class="event-type-badge" id="eventType">Event</span>
+            <h1 id="eventTitle">Loading...</h1>
+            <div class="event-meta-info">
+                <div class="event-meta-item">📅 <span id="eventDate">-</span></div>
+                <div class="event-meta-item">📍 <span id="eventLocation">-</span></div>
+                <div class="event-meta-item">👥 <span id="eventAttendees">-</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <div class="content-wrapper">
+        <div class="container">
+            <div class="content-grid">
+                <div class="main-content">
+                    <h2 class="section-title">About This Event</h2>
+                    <div class="event-description" id="eventDescription">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>Loading event details...
+                        </div>
+                    </div>
+
+                    <div class="event-gallery" id="eventGallery" style="display:none;">
+                        <h2 class="section-title">Event Gallery</h2>
+                        <div class="gallery-grid" id="galleryGrid"></div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="sidebar-card">
+                        <h3>Event Details</h3>
+                        <div class="detail-item">
+                            <div class="detail-icon">📅</div>
+                            <div class="detail-text">
+                                <div class="detail-label">Date</div>
+                                <div class="detail-value" id="sidebarDate">-</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon">📍</div>
+                            <div class="detail-text">
+                                <div class="detail-label">Location</div>
+                                <div class="detail-value" id="sidebarLocation">-</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon">👤</div>
+                            <div class="detail-text">
+                                <div class="detail-label">Organizer</div>
+                                <div class="detail-value" id="sidebarOrganizer">-</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon">🎤</div>
+                            <div class="detail-text">
+                                <div class="detail-label">Chief Guest</div>
+                                <div class="detail-value" id="sidebarChiefGuest">-</div>
+                            </div>
+                        </div>
+                        <a href="#" class="register-btn" id="registerBtn">Register Now</a>
+                        <a href="#" class="download-btn" id="downloadBtn" style="display:none;">
+                            📄 Download Brochure
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu
+        document.getElementById('mobileToggle').addEventListener('click', function () {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+
+        // Get event ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+
+        // Fetch event details
+        async function loadEvent() {
+            try {
+                const response = await fetch(`/api/events/${eventId}`);
+                const event = await response.json();
+
+                if (!event || event.error) {
+                    document.getElementById('eventTitle').textContent = 'Event Not Found';
+                    document.getElementById('eventDescription').innerHTML = '<p>The event you are looking for does not exist or has been removed.</p>';
+                    return;
+                }
+
+                // Update hero
+                const hero = document.getElementById('eventHero');
+                if (event.coverImage) {
+                    hero.style.backgroundImage = `url(${event.coverImage})`;
+                }
+
+                document.getElementById('eventType').textContent = event.eventType || 'Event';
+                document.getElementById('eventTitle').textContent = event.title;
+                document.getElementById('eventDate').textContent = formatDate(event.eventDate);
+                document.getElementById('eventLocation').textContent = event.location;
+                document.getElementById('eventAttendees').textContent = (event.attendees || 0) + '+ Participants';
+
+                // Update sidebar
+                document.getElementById('sidebarDate').textContent = formatDate(event.eventDate);
+                document.getElementById('sidebarLocation').textContent = event.location;
+                document.getElementById('sidebarOrganizer').textContent = event.organizer || 'ISTE Telangana';
+                document.getElementById('sidebarChiefGuest').textContent = event.chiefGuest || 'TBA';
+
+                // Description
+                document.getElementById('eventDescription').textContent = event.fullDescription || event.shortDescription;
+
+                // Registration link
+                if (event.registrationLink) {
+                    document.getElementById('registerBtn').href = event.registrationLink;
+                }
+
+                // Brochure download
+                if (event.brochurePDF) {
+                    document.getElementById('downloadBtn').style.display = 'flex';
+                    document.getElementById('downloadBtn').href = event.brochurePDF;
+                }
+
+                // Gallery images
+                if (event.galleryImages && event.galleryImages.length > 0) {
+                    document.getElementById('eventGallery').style.display = 'block';
+                    const galleryGrid = document.getElementById('galleryGrid');
+                    event.galleryImages.forEach(img => {
+                        galleryGrid.innerHTML += `<div class="gallery-item"><img src="${img}" alt="Event Image"></div>`;
+                    });
+                }
+
+                // Set page title
+                document.title = event.title + ' | ISTE Telangana';
+
+            } catch (error) {
+                console.error('Error loading event:', error);
+                document.getElementById('eventDescription').innerHTML = '<p>Error loading event details. Please try again later.</p>';
+            }
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'TBA';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // Load on page load
+        loadEvent();
+    </script>
+</body>
+
+</html>

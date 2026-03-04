@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership | ISTE Telangana</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #003366; --secondary: #FF6B35; --bg-white: #FFFFFF; --bg-light: #F5F7FA; --text-primary: #1A1A2E; --text-secondary: #666666; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Sans Pro', sans-serif; color: var(--text-primary); line-height: 1.6; }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        a { text-decoration: none; }
+
+        .notification-bar { background: linear-gradient(90deg, var(--primary), #004080); padding: 10px 0; overflow: hidden; }
+        .notification-track { display: flex; animation: scroll 30s linear infinite; width: fit-content; }
+        .notification-item { color: white; white-space: nowrap; padding: 0 40px; display: flex; align-items: center; gap: 10px; }
+        .notification-item::before { content: '📢'; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        header { position: sticky; top: 0; left: 0; right: 0; background: var(--bg-white); box-shadow: 0 2px 20px rgba(0,0,0,0.1); z-index: 1000; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 18px 40px; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 65px; height: 65px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--primary); }
+        .logo-text span { color: var(--secondary); }
+        nav ul { display: flex; list-style: none; gap: 30px; }
+        nav a { text-decoration: none; color: var(--text-primary); font-weight: 600; transition: color 0.3s ease; position: relative; }
+        nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: var(--secondary); transition: width 0.3s ease; }
+        nav a:hover { color: var(--primary); }
+        nav a:hover::after { width: 100%; }
+        nav a.active { color: var(--secondary); }
+        .mobile-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+        .mobile-toggle span { width: 25px; height: 3px; background: var(--primary); }
+
+        .page-header { background: linear-gradient(135deg, var(--primary) 0%, #001a33 100%); padding: 150px 0 80px; text-align: center; color: white; }
+        .page-header h1 { font-size: 48px; margin-bottom: 15px; }
+        .page-header p { font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+
+        .membership-section { padding: 80px 0; }
+        .section-title { text-align: center; margin-bottom: 50px; }
+        .section-title h2 { font-size: 36px; color: var(--primary); margin-bottom: 15px; }
+        .section-title p { color: var(--text-secondary); font-size: 17px; }
+
+        .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .plan-card { background: var(--bg-white); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: center; transition: all 0.3s ease; position: relative; }
+        .plan-card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .plan-card.featured { border: 3px solid var(--secondary); }
+        .plan-badge { position: absolute; top: 20px; right: 20px; background: var(--secondary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .plan-header { background: var(--primary); padding: 40px 20px; color: white; }
+        .plan-header h3 { font-size: 24px; margin-bottom: 10px; }
+        .plan-price { font-size: 48px; font-weight: 700; }
+        .plan-price span { font-size: 16px; font-weight: 400; }
+        .plan-body { padding: 30px; }
+        .plan-features { list-style: none; text-align: left; margin-bottom: 30px; }
+        .plan-features li { padding: 10px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
+        .plan-features li::before { content: '✓'; color: var(--secondary); font-weight: 700; }
+        .plan-btn { display: block; padding: 15px; background: var(--primary); color: white; border-radius: 10px; font-weight: 600; transition: background 0.3s ease; }
+        .plan-btn:hover { background: var(--secondary); }
+
+        .benefits-section { background: var(--bg-light); padding: 80px 0; }
+        .benefits-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+        .benefit-card { background: white; padding: 30px; border-radius: 15px; text-align: center; transition: transform 0.3s ease; }
+        .benefit-card:hover { transform: translateY(-5px); }
+        .benefit-icon { font-size: 40px; margin-bottom: 15px; }
+        .benefit-card h4 { color: var(--primary); margin-bottom: 10px; }
+        .benefit-card p { color: var(--text-secondary); font-size: 14px; }
+
+        .join-section { padding: 80px 0; text-align: center; }
+        .join-section h2 { font-size: 36px; color: var(--primary); margin-bottom: 20px; }
+        .join-section p { color: var(--text-secondary); font-size: 17px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+        footer { background: #0a0a0a; color: white; padding: 60px 0 30px; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .footer-about .logo { margin-bottom: 20px; }
+        .footer-about p { color: #999; font-size: 15px; margin-bottom: 20px; }
+        .footer-social { display: flex; gap: 12px; }
+        .footer-social a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; }
+        .footer-social a:hover { background: var(--secondary); }
+        .footer-links h4 { font-size: 18px; margin-bottom: 20px; color: white; }
+        .footer-links ul { list-style: none; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #999; text-decoration: none; }
+        .footer-links a:hover { color: var(--secondary); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px; text-align: center; color: #999; font-size: 14px; }
+
+        @media (max-width: 1024px) { .plans-grid { grid-template-columns: repeat(2, 1fr); } .benefits-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            nav ul { display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; flex-direction: column; padding: 20px; }
+            nav ul.active { display: flex; }
+            .mobile-toggle { display: flex; }
+            .page-header h1 { font-size: 36px; }
+            .plans-grid, .benefits-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="notification-bar">
+        <div class="notification-track">
+            <div class="notification-item">📢 Registrations open for TechVision 2025 - March 15, 2025</div>
+            <div class="notification-item">🎓 ISTE Student Chapter workshops across Telangana</div>
+            <div class="notification-item">🏆 Last date to apply for ISTE Annual Awards - February 28, 2025</div>
+            <div class="notification-item">💡 New AI & ML Certification Program launched</div>
+            <div class="notification-item">📢 Registrations open for TechVision 2025 - March 15, 2025</div>
+        </div>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="nav-container">
+                <a href="index.html" class="logo"><img class="logo-icon" src="/images/istelogo.jpg" alt="ISTE Logo"><div class="logo-text">ISTE <span>Telangana</span></div></a>
+                <nav>
+                    <ul id="nav-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="team.html">Team</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </nav>
+                <div class="mobile-toggle" id="mobile-toggle"><span></span><span></span><span></span></div>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>Membership</h1>
+            <p>Join ISTE Telangana and be part of a growing technical community</p>
+        </div>
+    </section>
+
+    <section class="membership-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Membership Plans</h2>
+                <p>Choose the plan that best suits your needs</p>
+            </div>
+            <div class="plans-grid">
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3>Student</h3>
+                        <div class="plan-price">₹500<span>/year</span></div>
+                    </div>
+                    <div class="plan-body">
+                        <ul class="plan-features">
+                            <li>Access to all events</li>
+                            <li>Student chapter membership</li>
+                            <li>Newsletter subscription</li>
+                            <li>Certificate of membership</li>
+                            <li>Online resources</li>
+                        </ul>
+                        <a href="contact.html" class="plan-btn">Join Now</a>
+                    </div>
+                </div>
+                <div class="plan-card featured">
+                    <div class="plan-badge">Popular</div>
+                    <div class="plan-header" style="background: var(--secondary);">
+                        <h3>Professional</h3>
+                        <div class="plan-price">₹2000<span>/year</span></div>
+                    </div>
+                    <div class="plan-body">
+                        <ul class="plan-features">
+                            <li>All Student benefits</li>
+                            <li>Conference discounts</li>
+                            <li>Networking opportunities</li>
+                            <li>Research publications</li>
+                            <li>Industry connections</li>
+                            <li>Leadership opportunities</li>
+                        </ul>
+                        <a href="contact.html" class="plan-btn" style="background: var(--secondary);">Join Now</a>
+                    </div>
+                </div>
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3>Life Member</h3>
+                        <div class="plan-price">₹10000<span>/lifetime</span></div>
+                    </div>
+                    <div class="plan-body">
+                        <ul class="plan-features">
+                            <li>All Professional benefits</li>
+                            <li>Lifetime membership</li>
+                            <li>VIP event access</li>
+                            <li>Recognition awards</li>
+                            <li>Specialist groups</li>
+                            <li>Career services</li>
+                        </ul>
+                        <a href="contact.html" class="plan-btn">Join Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="benefits-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Membership Benefits</h2>
+                <p>Exclusive perks for ISTE members</p>
+            </div>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎓</div>
+                    <h4>Education</h4>
+                    <p>Access to workshops, seminars, and training programs</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🤝</div>
+                    <h4>Networking</h4>
+                    <p>Connect with professionals and industry experts</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">📚</div>
+                    <h4>Resources</h4>
+                    <p>Access to publications, journals, and research papers</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🏆</div>
+                    <h4>Recognition</h4>
+                    <p>Eligibility for awards and honors</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="join-section">
+        <div class="container">
+            <h2>Ready to Join?</h2>
+            <p>Become a member today and be part of India's largest technical education society.</p>
+            <a href="contact.html" class="plan-btn" style="display: inline-block; background: var(--secondary); padding: 15px 40px; width: auto;">Register Now</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <a href="index.html" class="logo"><img class="logo-icon" src="/images/istelogo.jpg" alt="ISTE Logo"><div class="logo-text">ISTE <span>Telangana</span></div></a>
+                    <p>Indian Society for Technical Education - Telangana Chapter.</p>
+                    <div class="footer-social"><a href="#">f</a><a href="#">tw</a><a href="#">in</a></div>
+                </div>
+                <div class="footer-links"><h4>Quick Links</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="events.html">Events</a></li><li><a href="team.html">Team</a></li></ul></div>
+                <div class="footer-links"><h4>Resources</h4><ul><li><a href="membership.html">Membership</a></li><li><a href="resources.html">Publications</a></li></ul></div>
+                <div class="footer-links"><h4>Contact</h4><ul><li><a href="contact.html">Get in Touch</a></li></ul></div>
+            </div>
+            <div class="footer-bottom"><p>© 2025 ISTE Telangana. All Rights Reserved.</p></div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('mobile-toggle').addEventListener('click', () => {
+            document.getElementById('nav-menu').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

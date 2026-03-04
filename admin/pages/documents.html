@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents Management | ISTE Telangana Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #003366; --secondary: #FF6B35; --bg-white: #FFFFFF; --bg-light: #F5F7FA; --sidebar-width: 260px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Sans Pro', sans-serif; background: var(--bg-light); min-height: 100vh; }
+        .sidebar { position: fixed; left: 0; top: 0; width: var(--sidebar-width); background: linear-gradient(180deg, var(--primary) 0%, #001a33 100%); height: 100vh; color: white; z-index: 1000; }
+        .sidebar-header { padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header h2 { font-size: 20px; margin-bottom: 5px; }
+        .sidebar-menu { padding: 20px 0; }
+        .menu-item { display: flex; align-items: center; padding: 14px 20px; color: white; text-decoration: none; transition: all 0.3s; cursor: pointer; }
+        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--secondary); }
+        .menu-item i { width: 24px; margin-right: 12px; font-size: 18px; }
+        .sidebar-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .logout-btn:hover { background: var(--secondary); }
+        .main-content { margin-left: var(--sidebar-width); padding: 30px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .page-header h1 { font-size: 28px; color: var(--primary); }
+        .btn { padding: 10px 20px; background: var(--secondary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+        .btn:hover { background: #e55a2b; }
+        .btn-secondary { background: var(--primary); }
+        .card { background: var(--bg-white); padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .table th { background: var(--bg-light); font-weight: 600; color: var(--primary); }
+        .doc-icon { font-size: 24px; color: #dc3545; }
+        .actions { display: flex; gap: 8px; }
+        .action-btn { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
+        .action-edit { background: var(--primary); color: white; }
+        .action-delete { background: #dc3545; color: white; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: var(--primary); }
+        .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>ISTE Telangana</h2>
+            <p>Admin Control Panel</p>
+        </div>
+        <div class="sidebar-menu">
+            <a href="../index.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            <a href="events.html" class="menu-item"><i class="fas fa-calendar-alt"></i><span>Events</span></a>
+            <a href="announcements.html" class="menu-item"><i class="fas fa-bullhorn"></i><span>Announcements</span></a>
+            <a href="headlines.html" class="menu-item"><i class="fas fa-newspaper"></i><span>Headlines</span></a>
+            <a href="members.html" class="menu-item"><i class="fas fa-users"></i><span>Members</span></a>
+            <a href="gallery.html" class="menu-item"><i class="fas fa-images"></i><span>Gallery</span></a>
+            <a href="documents.html" class="menu-item active"><i class="fas fa-file-pdf"></i><span>Documents</span></a>
+            <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+        </div>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Documents Management</h1>
+            <button class="btn" onclick="openModal()"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Document</button>
+        </div>
+
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="documentsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" id="documentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Document</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="documentForm">
+                <input type="hidden" id="documentId">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="type">
+                        <option value="notice">Notice</option>
+                        <option value="report">Report</option>
+                        <option value="syllabus">Syllabus</option>
+                        <option value="form">Form</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category">
+                        <option value="academic">Academic</option>
+                        <option value="administrative">Administrative</option>
+                        <option value="forms">Forms</option>
+                        <option value="reports">Reports</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>File URL</label>
+                    <input type="text" id="file" placeholder="Enter file URL">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '../../api';
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = '../login.html';
+
+        let documents = [];
+
+        async function fetchDocuments() {
+            try {
+                const response = await fetch(API_URL + '/documents?active=true', { headers: { 'Authorization': 'Bearer ' + token } });
+                if (response.ok) {
+                    const data = await response.json();
+                    documents = data.documents;
+                    renderTable();
+                }
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('documentsBody');
+            tbody.innerHTML = documents.map(d => `
+                <tr>
+                    <td><i class="fas fa-file-pdf doc-icon"></i>&nbsp;&nbsp;<strong>${d.title}</strong></td>
+                    <td>${d.type}</td>
+                    <td>${d.category}</td>
+                    <td>${new Date(d.createdAt).toLocaleDateString()}</td>
+                    <td class="actions">
+                        <button class="action-btn action-edit" onclick="editDocument('${d._id}')"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn action-delete" onclick="deleteDocument('${d._id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openModal() {
+            document.getElementById('documentForm').reset();
+            document.getElementById('documentId').value = '';
+            document.getElementById('modalTitle').textContent = 'Add Document';
+            document.getElementById('documentModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('documentModal').classList.remove('show');
+        }
+
+        function editDocument(id) {
+            const d = documents.find(x => x._id === id);
+            if (!d) return;
+            document.getElementById('documentId').value = d._id;
+            document.getElementById('title').value = d.title;
+            document.getElementById('type').value = d.type;
+            document.getElementById('category').value = d.category;
+            document.getElementById('file').value = d.file || '';
+            document.getElementById('modalTitle').textContent = 'Edit Document';
+            document.getElementById('documentModal').classList.add('show');
+        }
+
+        document.getElementById('documentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('documentId').value;
+            const data = {
+                title: document.getElementById('title').value,
+                type: document.getElementById('type').value,
+                category: document.getElementById('category').value,
+                file: document.getElementById('file').value
+            };
+            try {
+                const url = id ? API_URL + '/documents/' + id : API_URL + '/documents';
+                const method = id ? 'PUT' : 'POST';
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) { closeModal(); fetchDocuments(); }
+                else alert('Error saving document');
+            } catch (error) { console.error('Error:', error); }
+        });
+
+        async function deleteDocument(id) {
+            if (!confirm('Delete this document?')) return;
+            try {
+                await fetch(API_URL + '/documents/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                fetchDocuments();
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = '../login.html';
+        }
+
+        fetchDocuments();
+    </script>
+</body>
+</html>

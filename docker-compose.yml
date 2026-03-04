@@ -1,0 +1,54 @@
+
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: iste-mongodb
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - iste-network
+    environment:
+      - MONGO_INITDB_DATABASE=iste_telangana
+
+  # Node.js Backend (internal only, accessed via nginx)
+  backend:
+    build: .
+    container_name: iste-backend
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/iste_telangana
+      - JWT_SECRET=iste_telangana_jwt_secret_key_2025
+      - NODE_ENV=production
+    volumes:
+      - uploads-data:/app/backend/uploads
+    networks:
+      - iste-network
+
+  # Nginx Reverse Proxy — splits public (3000) and admin (3001)
+  nginx:
+    image: nginx:alpine
+    container_name: iste-nginx
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:55521:3000"
+      - "127.0.0.1:55522:3001"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - iste-network
+
+volumes:
+  mongo-data:
+  uploads-data:
+
+networks:
+  iste-network:
+    driver: bridge
