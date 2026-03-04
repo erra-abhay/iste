@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
 const connectDB = require('./config/db');
 
@@ -18,16 +19,48 @@ const awardsRoutes = require('./routes/awards');
 
 // Import models for seeding initial admin
 const Admin = require('./models/Admin');
+const { auth } = require('./middleware/auth');
 
 const app = express();
 
 // Connect to MongoDB
 connectDB();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// --- SECURITY MIDDLEWARE ---
+
+// Helmet: sets various HTTP security headers
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow uploaded files to load
+  contentSecurityPolicy: false // handled by nginx in production
+}));
+
+// CORS: restrict to allowed origins only
+const allowedOrigins = [
+  'https://iste.brikienlabs.tech',
+  'https://administe.brikienlabs.tech'
+];
+// In development, also allow localhost
+if (process.env.NODE_ENV !== 'production') {
+  allowedOrigins.push('http://localhost:3000', 'http://localhost:3001', 'http://localhost:5000');
+}
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (same-origin, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
+
+// Body parsing with size limits
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+// Disable X-Powered-By header (extra layer, helmet also does this)
+app.disable('x-powered-by');
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -51,8 +84,8 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/awards', awardsRoutes);
 
-// Dashboard stats route
-app.get('/api/dashboard/stats', async (req, res) => {
+// Dashboard stats route — now requires authentication
+app.get('/api/dashboard/stats', auth, async (req, res) => {
   try {
     const Event = require('./models/Event');
     const Member = require('./models/Member');
@@ -83,7 +116,8 @@ app.get('/api/dashboard/stats', async (req, res) => {
       awards: awardsCount
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Dashboard stats error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -98,24 +132,34 @@ if (!fs.existsSync('./uploads')) {
   fs.mkdirSync('./uploads');
 }
 
-// Seed initial admin account
+// Seed initial admin account (password from env, NOT hardcoded)
 const seedAdmin = async () => {
   try {
     const adminExists = await Admin.findOne({ email: 'admin@iste-telangana.org' });
     if (!adminExists) {
+      const seedPassword = process.env.ADMIN_SEED_PASSWORD || 'ChangeMe@2025!';
       const admin = new Admin({
         email: 'admin@iste-telangana.org',
-        password: 'isteadmin2025',
+        password: seedPassword,
         name: 'Super Admin',
         role: 'superadmin'
       });
       await admin.save();
-      console.log('Initial admin account created: admin@iste-telangana.org / isteadmin2025');
+      console.log('Initial admin account created. Change the default password immediately!');
     }
   } catch (error) {
     console.error('Error seeding admin:', error.message);
   }
 };
+
+// Global error handler — hide details in production
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err.message);
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ message: 'CORS policy: origin not allowed' });
+  }
+  res.status(500).json({ message: 'Internal server error' });
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;

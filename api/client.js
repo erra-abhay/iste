@@ -2,6 +2,17 @@
 // Use relative URL so it works in both dev (localhost:3000) and production
 const API_BASE_URL = '/api';
 
+// ========== XSS PREVENTION ==========
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // ========== FETCH FUNCTIONS ==========
 
 async function fetchEvents(limit) {
@@ -150,7 +161,7 @@ async function renderUrgentNotifications() {
     if (track) {
       var html = '';
       for (var i = 0; i < urgentNotifications.length; i++) {
-        html += '<span class="notification-item">🚨 ' + urgentNotifications[i].title + '</span>';
+        html += '<span class="notification-item">🚨 ' + escapeHtml(urgentNotifications[i].title) + '</span>';
       }
       track.innerHTML = html + html;
     }
@@ -178,7 +189,7 @@ async function renderHeadlines() {
 
   var html = '';
   for (var i = 0; i < headlines.length; i++) {
-    html += '<span class="notification-item">📢 ' + headlines[i].text + '</span>';
+    html += '<span class="notification-item">📢 ' + escapeHtml(headlines[i].text) + '</span>';
   }
   track.innerHTML = html + html;
 }
@@ -205,21 +216,21 @@ async function renderEvents(containerId, limit) {
   for (var i = 0; i < data.events.length; i++) {
     var event = data.events[i];
     var eventDate = event.eventDate ? formatEventDate(event.eventDate) : '';
-    var coverImage = event.coverImage ? '<img src="' + event.coverImage + '" alt="' + event.title + '" style="width:100%;height:100%;object-fit:cover;">' : '📅';
-    var shortDesc = event.shortDescription ? event.shortDescription.substring(0, 80) + '...' : '';
+    var coverImage = event.coverImage ? '<img src="' + escapeHtml(event.coverImage) + '" alt="' + escapeHtml(event.title) + '" style="width:100%;height:100%;object-fit:cover;">' : '📅';
+    var shortDesc = event.shortDescription ? escapeHtml(event.shortDescription.substring(0, 80)) + '...' : '';
 
-    html += '<a href="event-details.html?id=' + event._id + '" class="event-card" style="display:block;text-decoration:none;color:inherit;">';
-    html += '<div class="event-image">' + coverImage + '<div class="event-date">' + eventDate + '</div></div>';
+    html += '<a href="event-details.html?id=' + encodeURIComponent(event._id) + '" class="event-card" style="display:block;text-decoration:none;color:inherit;">';
+    html += '<div class="event-image">' + coverImage + '<div class="event-date">' + escapeHtml(eventDate) + '</div></div>';
     html += '<div class="event-content">';
-    html += '<span class="event-category">' + (event.eventType || 'Event') + '</span>';
-    html += '<h3>' + event.title + '</h3>';
+    html += '<span class="event-category">' + escapeHtml(event.eventType || 'Event') + '</span>';
+    html += '<h3>' + escapeHtml(event.title) + '</h3>';
     html += '<p>' + shortDesc + '</p>';
     html += '<div class="event-meta">';
-    html += '<span>📍 ' + (event.location || 'TBA') + '</span>';
-    html += '<span>👥 ' + (event.attendees || 0) + '+</span>';
+    html += '<span>📍 ' + escapeHtml(event.location || 'TBA') + '</span>';
+    html += '<span>👥 ' + parseInt(event.attendees || 0) + '+</span>';
     html += '</div>';
     if (event.registrationLink) {
-      html += '<a href="' + event.registrationLink + '" target="_blank" style="display:inline-block;margin-top:10px;padding:8px 20px;background:#FF6B35;color:white;border-radius:25px;font-size:13px;font-weight:600;text-decoration:none;">Register Now →</a>';
+      html += '<a href="' + escapeHtml(event.registrationLink) + '" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;padding:8px 20px;background:#FF6B35;color:white;border-radius:25px;font-size:13px;font-weight:600;text-decoration:none;">Register Now →</a>';
     }
     html += '</div></a>';
   }
@@ -241,14 +252,14 @@ async function renderMembers(containerId, committee, limit) {
   var html = '';
   for (var i = 0; i < data.members.length; i++) {
     var member = data.members[i];
-    var photo = member.photo ? '<img src="' + member.photo + '" alt="' + member.name + '" style="width:100%;height:100%;object-fit:cover;">' : '👤';
+    var photo = member.photo ? '<img src="' + escapeHtml(member.photo) + '" alt="' + escapeHtml(member.name) + '" style="width:100%;height:100%;object-fit:cover;">' : '👤';
 
     html += '<div class="committee-card">';
     html += '<div class="committee-image">' + photo + '</div>';
     html += '<div class="committee-info">';
-    html += '<h3>' + member.name + '</h3>';
-    html += '<div class="committee-role">' + member.designation + '</div>';
-    html += '<div class="committee-org">' + member.organization + '</div>';
+    html += '<h3>' + escapeHtml(member.name) + '</h3>';
+    html += '<div class="committee-role">' + escapeHtml(member.designation) + '</div>';
+    html += '<div class="committee-org">' + escapeHtml(member.organization) + '</div>';
     html += '</div></div>';
   }
   container.innerHTML = html;
@@ -273,10 +284,10 @@ async function renderAwards(containerId, limit) {
     html += '<div class="award-card">';
     html += '<div class="award-icon">🏆</div>';
     html += '<div class="award-content">';
-    html += '<h3>' + award.awardTitle + '</h3>';
-    html += '<p>' + (award.recipientName || '') + '</p>';
-    html += '<p style="font-size:13px;color:#666;margin-top:5px;">' + (award.description || '') + '</p>';
-    html += '<div class="award-year">' + (award.year || '') + '</div>';
+    html += '<h3>' + escapeHtml(award.awardTitle) + '</h3>';
+    html += '<p>' + escapeHtml(award.recipientName || '') + '</p>';
+    html += '<p style="font-size:13px;color:#666;margin-top:5px;">' + escapeHtml(award.description || '') + '</p>';
+    html += '<div class="award-year">' + escapeHtml(award.year || '') + '</div>';
     html += '</div></div>';
   }
   container.innerHTML = html;
@@ -298,8 +309,8 @@ async function renderGallery(containerId, limit) {
   for (var i = 0; i < data.gallery.length; i++) {
     var album = data.gallery[i];
     var coverImage = album.coverImage
-      ? '<img src="' + album.coverImage + '" alt="' + album.albumTitle + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">'
-      : '<span style="font-size:40px;">📷</span><p style="color:#333;margin-top:10px;">' + album.albumTitle + '</p>';
+      ? '<img src="' + escapeHtml(album.coverImage) + '" alt="' + escapeHtml(album.albumTitle) + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">'
+      : '<span style="font-size:40px;">📷</span><p style="color:#333;margin-top:10px;">' + escapeHtml(album.albumTitle) + '</p>';
 
     html += '<div class="gallery-item">' + coverImage + '</div>';
   }
@@ -321,9 +332,9 @@ async function renderAnnouncements(containerId, limit) {
   var html = '';
   for (var i = 0; i < data.announcements.length; i++) {
     var ann = data.announcements[i];
-    html += '<div class="notice-card notice-' + (ann.priority || 'medium') + '">';
-    html += '<h4>' + ann.title + '</h4>';
-    html += '<p>' + ann.content + '</p>';
+    html += '<div class="notice-card notice-' + escapeHtml(ann.priority || 'medium') + '">';
+    html += '<h4>' + escapeHtml(ann.title) + '</h4>';
+    html += '<p>' + escapeHtml(ann.content) + '</p>';
     html += '<span class="notice-date">' + new Date(ann.createdAt).toLocaleDateString() + '</span>';
     html += '</div>';
   }
@@ -348,8 +359,8 @@ async function renderDocuments(containerId, limit) {
     html += '<div class="document-item">';
     html += '<span class="doc-icon">📄</span>';
     html += '<div class="doc-info">';
-    html += '<h4>' + doc.title + '</h4>';
-    html += '<a href="' + doc.file + '" download class="download-link">Download</a>';
+    html += '<h4>' + escapeHtml(doc.title) + '</h4>';
+    html += '<a href="' + escapeHtml(doc.file) + '" download class="download-link">Download</a>';
     html += '</div></div>';
   }
   container.innerHTML = html;
@@ -374,15 +385,15 @@ async function renderNotificationsList(containerId) {
     var priorityClass = n.priority || 'medium';
     var date = new Date(n.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
 
-    html += '<div class="notification-card ' + priorityClass + '">';
+    html += '<div class="notification-card ' + escapeHtml(priorityClass) + '">';
     html += '<div class="notification-header">';
-    html += '<span class="notification-title">' + n.title + '</span>';
-    html += '<span class="notification-badge badge-' + priorityClass + '">' + (n.priority || 'Medium') + '</span>';
+    html += '<span class="notification-title">' + escapeHtml(n.title) + '</span>';
+    html += '<span class="notification-badge badge-' + escapeHtml(priorityClass) + '">' + escapeHtml(n.priority || 'Medium') + '</span>';
     html += '</div>';
-    html += '<p class="notification-message">' + n.message + '</p>';
+    html += '<p class="notification-message">' + escapeHtml(n.message) + '</p>';
     html += '<div class="notification-meta">';
-    html += '<span>📅 ' + date + '</span>';
-    html += '<span>🏷️ ' + (n.type || 'Info') + '</span>';
+    html += '<span>📅 ' + escapeHtml(date) + '</span>';
+    html += '<span>🏷️ ' + escapeHtml(n.type || 'Info') + '</span>';
     html += '</div></div>';
   }
   container.innerHTML = html;
@@ -395,7 +406,7 @@ async function renderSettings() {
   // Hero section (index.html)
   if (settings.heroTitle) {
     var heroTitle = document.getElementById('heroTitle');
-    if (heroTitle) heroTitle.innerHTML = settings.heroTitle;
+    if (heroTitle) heroTitle.textContent = settings.heroTitle;
   }
   if (settings.heroSubtitle) {
     var heroSubtitle = document.getElementById('heroSubtitle');

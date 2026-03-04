@@ -1,11 +1,16 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'iste_telangana_secret_key_2025';
+// JWT_SECRET must be set via environment variable — no fallback
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is not set!');
+  process.exit(1);
+}
 
 const auth = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+
     if (!token) {
       return res.status(401).json({ message: 'No authentication token, access denied' });
     }
@@ -27,4 +32,4 @@ const generateToken = (admin) => {
   );
 };
 
-module.exports = { auth, generateToken, JWT_SECRET };
+module.exports = { auth, generateToken };
