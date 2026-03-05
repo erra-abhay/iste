@@ -44,8 +44,8 @@ services:
     depends_on:
       - backend
     ports:
-      - "127.0.0.1:55521:3000"
-      - "127.0.0.1:55522:3001"
+      - "3000:3000"
+      - "3001:3001"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
