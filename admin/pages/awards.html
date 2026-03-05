@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awards Management | ISTE Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #FF6B35;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F7FA;
+            --text-primary: #1A1A2E;
+            --text-secondary: #666666;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: var(--bg-light);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, #001a33 100%);
+            height: 100vh;
+            color: white;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--secondary);
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #e55a2b;
+        }
+
+        .btn-secondary {
+            background: var(--primary);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .card {
+            background: var(--bg-white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .action-edit {
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .award-cover {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .photo-count {
+            font-size: 11px;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .icon-select {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .icon-option {
+            padding: 8px;
+            text-align: center;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .icon-option:hover,
+        .icon-option.selected {
+            border-color: var(--secondary);
+            background: #fff5f0;
+        }
+
+        .existing-photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .existing-photo {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .existing-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .existing-photo .remove-photo {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>ISTE Telangana</h2>
+            <p>Admin Control Panel</p>
+        </div>
+        <div class="sidebar-menu">
+            <a href="../index.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            <a href="events.html" class="menu-item"><i class="fas fa-calendar-alt"></i><span>Events</span></a>
+            <a href="headlines.html" class="menu-item"><i class="fas fa-newspaper"></i><span>Headlines</span></a>
+            <a href="members.html" class="menu-item"><i class="fas fa-users"></i><span>Members</span></a>
+            <a href="gallery.html" class="menu-item"><i class="fas fa-images"></i><span>Gallery</span></a>
+            <a href="notifications.html" class="menu-item"><i class="fas fa-bell"></i><span>Notifications</span></a>
+            <a href="messages.html" class="menu-item"><i class="fas fa-envelope"></i><span>Messages</span></a>
+            <a href="awards.html" class="menu-item active"><i class="fas fa-trophy"></i><span>Awards</span></a>
+            <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+        </div>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Awards Management</h1>
+            <button class="btn" onclick="openModal()"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Award</button>
+        </div>
+
+        <div class="card">
+            <table class="table" id="awardsTable">
+                <thead>
+                    <tr>
+                        <th>Cover</th>
+                        <th>Title</th>
+                        <th>Recipient</th>
+                        <th>Category</th>
+                        <th>Year</th>
+                        <th>Photos</th>
+                        <th>Dashboard</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="awardsBody"></tbody>
+            </table>
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <i class="fas fa-trophy"></i>
+                <p>No awards found. Click "Add Award" to create one.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="awardModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Award</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="awardForm">
+                <input type="hidden" id="awardId">
+                <div class="form-group">
+                    <label>Award Title</label>
+                    <input type="text" id="awardTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Recipient Name</label>
+                    <input type="text" id="recipientName" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category">
+                        <option value="teacher">Best Teacher</option>
+                        <option value="student">Best Student</option>
+                        <option value="college">Best College</option>
+                        <option value="lifetime">Lifetime Achievement</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="number" id="year" required min="2000" max="2100">
+                </div>
+                <div class="form-group">
+                    <label>Icon</label>
+                    <div class="icon-select">
+                        <div class="icon-option selected" onclick="selectIcon('🏆', this)">🏆</div>
+                        <div class="icon-option" onclick="selectIcon('🎖️', this)">🎖️</div>
+                        <div class="icon-option" onclick="selectIcon('⭐', this)">⭐</div>
+                        <div class="icon-option" onclick="selectIcon('🌟', this)">🌟</div>
+                        <div class="icon-option" onclick="selectIcon('🎓', this)">🎓</div>
+                        <div class="icon-option" onclick="selectIcon('💎', this)">💎</div>
+                        <div class="icon-option" onclick="selectIcon('👑', this)">👑</div>
+                        <div class="icon-option" onclick="selectIcon('🏅', this)">🏅</div>
+                        <div class="icon-option" onclick="selectIcon('🥇', this)">🥇</div>
+                        <div class="icon-option" onclick="selectIcon('🎯', this)">🎯</div>
+                        <div class="icon-option" onclick="selectIcon('🔥', this)">🔥</div>
+                        <div class="icon-option" onclick="selectIcon('✨', this)">✨</div>
+                    </div>
+                    <input type="hidden" id="icon" value="🏆">
+                </div>
+                <div class="form-group">
+                    <label>Cover Image</label>
+                    <input type="file" id="coverImage" accept="image/*">
+                    <div id="coverPreview" style="margin-top:8px;"></div>
+                </div>
+                <div class="form-group">
+                    <label>Award Photos (Multiple)</label>
+                    <input type="file" id="photos" accept="image/*" multiple>
+                    <div class="existing-photos" id="existingPhotos"></div>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="isActive" checked> Active</label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn">Save Award</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/awards';
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = '../login.html';
+
+        let awards = [];
+        let currentExistingPhotos = [];
+
+        async function fetchAwards() {
+            try {
+                const response = await fetch(API_URL, { headers: { 'Authorization': 'Bearer ' + token } });
+                if (response.ok) {
+                    const data = await response.json();
+                    awards = data.awards || [];
+                    renderTable();
+                }
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('awardsBody');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!awards || awards.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            tbody.innerHTML = awards.map(function (a) {
+                var coverHtml = a.coverImage
+                    ? '<img src="' + a.coverImage + '" class="award-cover">'
+                    : '<span style="font-size:28px;">' + (a.icon || '🏆') + '</span>';
+                var photoCount = a.photos ? a.photos.length : 0;
+                var dashIcon = a.showOnDashboard ? 'eye' : 'eye-slash';
+                var dashColor = a.showOnDashboard ? '#28a745' : '#ccc';
+
+                return '<tr>' +
+                    '<td>' + coverHtml + '</td>' +
+                    '<td><strong>' + (a.awardTitle || a.title || '') + '</strong></td>' +
+                    '<td>' + (a.recipientName || '') + '</td>' +
+                    '<td><span class="badge">' + (a.category || '') + '</span></td>' +
+                    '<td>' + (a.year || '') + '</td>' +
+                    '<td><span class="photo-count">' + photoCount + ' photos</span></td>' +
+                    '<td><button class="action-btn" style="background:' + dashColor + ';color:white;" onclick="toggleDashboard(\'' + a._id + '\', ' + !a.showOnDashboard + ')" title="' + (a.showOnDashboard ? 'Visible on dashboard' : 'Not on dashboard') + '"><i class="fas fa-' + dashIcon + '"></i></button></td>' +
+                    '<td><span class="badge ' + (a.isActive !== false ? 'badge-active' : 'badge-inactive') + '">' + (a.isActive !== false ? 'Active' : 'Inactive') + '</span></td>' +
+                    '<td class="actions">' +
+                    '<button class="action-btn action-edit" onclick="editAward(\'' + a._id + '\')"><i class="fas fa-edit"></i></button>' +
+                    '<button class="action-btn action-delete" onclick="deleteAward(\'' + a._id + '\')"><i class="fas fa-trash"></i></button>' +
+                    '</td></tr>';
+            }).join('');
+        }
+
+        function openModal() {
+            document.getElementById('awardForm').reset();
+            document.getElementById('awardId').value = '';
+            document.getElementById('icon').value = '🏆';
+            document.getElementById('coverPreview').innerHTML = '';
+            document.getElementById('existingPhotos').innerHTML = '';
+            currentExistingPhotos = [];
+            document.querySelectorAll('.icon-option').forEach(function (el) { el.classList.remove('selected'); });
+            document.querySelector('.icon-option').classList.add('selected');
+            document.getElementById('modalTitle').textContent = 'Add Award';
+            document.getElementById('awardModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('awardModal').classList.remove('show');
+        }
+
+        function selectIcon(icon, el) {
+            document.getElementById('icon').value = icon;
+            document.querySelectorAll('.icon-option').forEach(function (e) { e.classList.remove('selected'); });
+            el.classList.add('selected');
+        }
+
+        async function editAward(id) {
+            try {
+                const response = await fetch(API_URL + '/' + id, { headers: { 'Authorization': 'Bearer ' + token } });
+                const award = await response.json();
+
+                document.getElementById('awardId').value = award._id;
+                document.getElementById('awardTitle').value = award.awardTitle || award.title || '';
+                document.getElementById('recipientName').value = award.recipientName || '';
+                document.getElementById('description').value = award.description || '';
+                document.getElementById('category').value = award.category || 'other';
+                document.getElementById('year').value = award.year || '';
+                document.getElementById('icon').value = award.icon || '🏆';
+                document.getElementById('isActive').checked = award.isActive !== false;
+
+                // Show cover preview
+                document.getElementById('coverPreview').innerHTML = award.coverImage
+                    ? '<img src="' + award.coverImage + '" style="max-width:200px;max-height:100px;border-radius:8px;">'
+                    : '';
+
+                // Show existing photos
+                currentExistingPhotos = award.photos || [];
+                renderExistingPhotos();
+
+                // Set icon selection
+                document.querySelectorAll('.icon-option').forEach(function (el) {
+                    el.classList.remove('selected');
+                    if (el.textContent.trim() === (award.icon || '🏆')) el.classList.add('selected');
+                });
+
+                document.getElementById('modalTitle').textContent = 'Edit Award';
+                document.getElementById('awardModal').classList.add('show');
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function renderExistingPhotos() {
+            var container = document.getElementById('existingPhotos');
+            if (!currentExistingPhotos || currentExistingPhotos.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = currentExistingPhotos.map(function (photo, idx) {
+                return '<div class="existing-photo">' +
+                    '<img src="' + photo + '">' +
+                    '<button type="button" class="remove-photo" onclick="removeExistingPhoto(' + idx + ')">×</button>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function removeExistingPhoto(idx) {
+            currentExistingPhotos.splice(idx, 1);
+            renderExistingPhotos();
+        }
+
+        document.getElementById('awardForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            var id = document.getElementById('awardId').value;
+
+            var formData = new FormData();
+            formData.append('awardTitle', document.getElementById('awardTitle').value);
+            formData.append('recipientName', document.getElementById('recipientName').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('year', document.getElementById('year').value);
+            formData.append('icon', document.getElementById('icon').value);
+            formData.append('isActive', document.getElementById('isActive').checked);
+
+            var coverInput = document.getElementById('coverImage');
+            if (coverInput.files[0]) {
+                formData.append('coverImage', coverInput.files[0]);
+            }
+
+            var photosInput = document.getElementById('photos');
+            if (photosInput.files.length > 0) {
+                for (var i = 0; i < photosInput.files.length; i++) {
+                    formData.append('photos', photosInput.files[i]);
+                }
+            }
+
+            if (id) {
+                formData.append('existingPhotos', JSON.stringify(currentExistingPhotos));
+            }
+
+            try {
+                var url = id ? API_URL + '/' + id : API_URL;
+                var method = id ? 'PUT' : 'POST';
+                var response = await fetch(url, {
+                    method: method,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    fetchAwards();
+                } else {
+                    var err = await response.json();
+                    alert('Error: ' + (err.message || 'Failed to save'));
+                }
+            } catch (error) { console.error('Error:', error); }
+        });
+
+        async function deleteAward(id) {
+            if (!confirm('Delete this award?')) return;
+            try {
+                await fetch(API_URL + '/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                fetchAwards();
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        async function toggleDashboard(id, val) {
+            try {
+                var formData = new FormData();
+                formData.append('showOnDashboard', val);
+                await fetch(API_URL + '/' + id, {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+                fetchAwards();
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = '../login.html';
+        }
+
+        fetchAwards();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery Management | ISTE Telangana Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #FF6B35;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F7FA;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: var(--bg-light);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, #001a33 100%);
+            height: 100vh;
+            color: white;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--secondary);
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #e55a2b;
+        }
+
+        .btn-secondary {
+            background: var(--primary);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .gallery-item {
+            background: var(--bg-white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 180px;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-image i {
+            font-size: 40px;
+            color: #ccc;
+        }
+
+        .gallery-info {
+            padding: 15px;
+        }
+
+        .gallery-info h4 {
+            font-size: 15px;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .gallery-info p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .gallery-badge {
+            display: inline-block;
+            background: rgba(0, 51, 102, 0.1);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .gallery-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-edit {
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+        }
+
+        /* Existing images grid in modal */
+        .existing-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .existing-image-thumb {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .existing-image-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .existing-image-thumb .remove-img {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 20px;
+            height: 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>ISTE Telangana</h2>
+            <p>Admin Control Panel</p>
+        </div>
+        <div class="sidebar-menu">
+            <a href="../index.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            <a href="events.html" class="menu-item"><i class="fas fa-calendar-alt"></i><span>Events</span></a>
+            <a href="headlines.html" class="menu-item"><i class="fas fa-newspaper"></i><span>Headlines</span></a>
+            <a href="members.html" class="menu-item"><i class="fas fa-users"></i><span>Members</span></a>
+            <a href="gallery.html" class="menu-item active"><i class="fas fa-images"></i><span>Gallery</span></a>
+            <a href="notifications.html" class="menu-item"><i class="fas fa-bell"></i><span>Notifications</span></a>
+            <a href="messages.html" class="menu-item"><i class="fas fa-envelope"></i><span>Messages</span></a>
+            <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+        </div>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Gallery Management</h1>
+            <button class="btn" onclick="openModal()"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Album</button>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+
+    <div class="modal" id="galleryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Gallery Album</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="galleryForm">
+                <input type="hidden" id="galleryId">
+                <div class="form-group">
+                    <label>Album Title *</label>
+                    <input type="text" id="albumTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category">
+                        <option value="Convocation">Convocation</option>
+                        <option value="Awards">Awards</option>
+                        <option value="Seminar">Seminar</option>
+                        <option value="Workshop">Workshop</option>
+                        <option value="Team">Team</option>
+                        <option value="Event">Event</option>
+                        <option value="Research">Research</option>
+                        <option value="Achievement">Achievement</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cover Image</label>
+                    <input type="file" id="coverImage" accept="image/*">
+                    <div id="coverPreview" style="margin-top:8px;"></div>
+                </div>
+                <div class="form-group">
+                    <label>Album Images (select multiple)</label>
+                    <input type="file" id="albumImages" accept="image/*" multiple>
+                    <p style="font-size:12px;color:#666;margin-top:4px;">Hold Ctrl/Cmd to select multiple images</p>
+                    <div class="existing-images" id="existingImages"></div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn">Save Album</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = '../login.html';
+
+        let gallery = [];
+        let editExistingImages = []; // Track images to keep during edit
+
+        async function fetchGallery() {
+            try {
+                const response = await fetch(API_URL + '/gallery', { headers: { 'Authorization': 'Bearer ' + token } });
+                if (response.ok) {
+                    const data = await response.json();
+                    gallery = data.gallery;
+                    renderGrid();
+                }
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('galleryGrid');
+            if (gallery.length === 0) {
+                grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:50px;color:#666;">No gallery albums. Click "Add Album" to create one.</p>';
+                return;
+            }
+            grid.innerHTML = gallery.map(g => {
+                const imgCount = (g.images && g.images.length) || 0;
+                return `
+                <div class="gallery-item">
+                    <div class="gallery-actions">
+                        <button class="action-btn action-edit" onclick="editGallery('${g._id}')"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn action-delete" onclick="deleteGallery('${g._id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="gallery-image">
+                        ${g.coverImage ? '<img src="' + g.coverImage + '">' : '<i class="fas fa-image"></i>'}
+                    </div>
+                    <div class="gallery-info">
+                        <h4>${g.albumTitle || ''}</h4>
+                        <p>${g.category || ''}</p>
+                        <span class="gallery-badge">${imgCount} photo${imgCount !== 1 ? 's' : ''}</span>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function openModal() {
+            document.getElementById('galleryForm').reset();
+            document.getElementById('galleryId').value = '';
+            document.getElementById('coverPreview').innerHTML = '';
+            document.getElementById('existingImages').innerHTML = '';
+            document.getElementById('modalTitle').textContent = 'Add Gallery Album';
+            editExistingImages = [];
+            document.getElementById('galleryModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('galleryModal').classList.remove('show');
+        }
+
+        function editGallery(id) {
+            const g = gallery.find(x => x._id === id);
+            if (!g) return;
+            document.getElementById('galleryId').value = g._id;
+            document.getElementById('albumTitle').value = g.albumTitle || '';
+            document.getElementById('category').value = g.category || '';
+            document.getElementById('description').value = g.description || '';
+            document.getElementById('coverPreview').innerHTML = g.coverImage ? '<img src="' + g.coverImage + '" style="max-width:200px;max-height:100px;border-radius:8px;">' : '';
+            document.getElementById('modalTitle').textContent = 'Edit Gallery Album';
+
+            // Show existing images
+            editExistingImages = g.images ? [...g.images] : [];
+            renderExistingImages();
+
+            document.getElementById('galleryModal').classList.add('show');
+        }
+
+        function renderExistingImages() {
+            const container = document.getElementById('existingImages');
+            if (editExistingImages.length === 0) {
+                container.innerHTML = '<p style="font-size:12px;color:#999;">No images in album yet</p>';
+                return;
+            }
+            container.innerHTML = editExistingImages.map((img, idx) =>
+                '<div class="existing-image-thumb">' +
+                '<img src="' + img + '">' +
+                '<button type="button" class="remove-img" onclick="removeExistingImage(' + idx + ')">&times;</button>' +
+                '</div>'
+            ).join('');
+        }
+
+        function removeExistingImage(idx) {
+            editExistingImages.splice(idx, 1);
+            renderExistingImages();
+        }
+
+        document.getElementById('galleryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('galleryId').value;
+
+            const formData = new FormData();
+            formData.append('albumTitle', document.getElementById('albumTitle').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('description', document.getElementById('description').value);
+
+            const coverInput = document.getElementById('coverImage');
+            if (coverInput.files[0]) {
+                formData.append('coverImage', coverInput.files[0]);
+            }
+
+            const imagesInput = document.getElementById('albumImages');
+            if (imagesInput.files.length > 0) {
+                for (let i = 0; i < imagesInput.files.length; i++) {
+                    formData.append('images', imagesInput.files[i]);
+                }
+            }
+
+            // Send existing images list (for edit mode)
+            if (id && editExistingImages.length > 0) {
+                formData.append('existingImages', JSON.stringify(editExistingImages));
+            }
+
+            try {
+                const url = id ? API_URL + '/gallery/' + id : API_URL + '/gallery';
+                const method = id ? 'PUT' : 'POST';
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+                if (response.ok) { closeModal(); fetchGallery(); }
+                else {
+                    const err = await response.json();
+                    alert('Error: ' + (err.message || 'Failed to save'));
+                }
+            } catch (error) { console.error('Error:', error); }
+        });
+
+        async function deleteGallery(id) {
+            if (!confirm('Delete this album and all its images?')) return;
+            try {
+                await fetch(API_URL + '/gallery/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                fetchGallery();
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = '../login.html';
+        }
+
+        fetchGallery();
+    </script>
+</body>
+
+</html>

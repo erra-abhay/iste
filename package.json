@@ -1,0 +1,14 @@
+{
+  "name": "iste-telangana",
+  "version": "1.0.0",
+  "description": "ISTE Telangana - Dynamic Organization Portal",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev:public": "cd backend && node server.js",
+    "dev:admin": "node admin-server.js",
+    "dev": "npm run dev:public & npm run dev:admin",
+    "install": "cd backend && npm install",
+    "seed": "cd backend && node seed.js"
+  },
+  "dependencies": {}
+}

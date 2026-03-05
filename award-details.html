@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Award Details | ISTE Telangana</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #003366; --secondary: #FF6B35; --bg-white: #FFFFFF; --bg-light: #F5F7FA; --text-primary: #1A1A2E; --text-secondary: #666666; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Sans Pro', sans-serif; color: var(--text-primary); background: var(--bg-light); }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        a { text-decoration: none; }
+
+        .main-nav { background: var(--bg-white); box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: sticky; width: 100%; top: 0; z-index: 1000; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 18px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--primary); }
+        .logo-text span { color: var(--secondary); }
+        .nav-menu { display: flex; list-style: none; gap: 30px; }
+        .nav-menu a { color: var(--text-primary); font-weight: 600; font-size: 16px; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--secondary); }
+        .mobile-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+        .mobile-toggle span { width: 25px; height: 3px; background: var(--primary); }
+
+        .page-hero {
+            margin-top: 0;
+            background: linear-gradient(135deg, var(--primary), #004080);
+            padding: 60px 0;
+            text-align: center;
+            color: white;
+        }
+        .page-hero h1 { font-size: 42px; margin-bottom: 10px; }
+        .page-hero .year { font-size: 24px; color: var(--secondary); }
+
+        .content { padding: 50px 0; }
+        .award-card { background: var(--bg-white); border-radius: 15px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.08); display: flex; max-width: 800px; margin: 0 auto; }
+        .award-image { width: 300px; background: linear-gradient(135deg, var(--primary), #004080); display: flex; align-items: center; justify-content: center; font-size: 80px; color: white; }
+        .award-details { padding: 40px; flex: 1; }
+        .award-details h2 { font-size: 28px; color: var(--primary); margin-bottom: 10px; }
+        .award-details .recipient { font-size: 20px; color: var(--secondary); font-weight: 600; margin-bottom: 20px; }
+        .award-details .description { color: var(--text-secondary); line-height: 1.8; }
+        .back-link { display: inline-block; margin-top: 30px; color: var(--primary); font-weight: 600; }
+
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .mobile-toggle { display: flex; }
+            .award-card { flex-direction: column; }
+            .award-image { width: 100%; height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img class="logo-icon" src="/images/istelogo.jpg" alt="ISTE Logo">
+                <div class="logo-text">ISTE <span>Telangana</span></div>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="awards.html">Awards</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="notifications.html">Notifications</a></li>
+                <li><a href="committee.html">Committee</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="mobile-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1>Award Details</h1>
+            <div class="year" id="awardYear"></div>
+        </div>
+    </section>
+
+    <div class="content">
+        <div class="container">
+            <div class="award-card" id="awardCard">
+                <div class="award-image" id="awardImage">🏆</div>
+                <div class="award-details">
+                    <h2 id="awardTitle">Loading...</h2>
+                    <div class="recipient" id="recipientName"></div>
+                    <div class="description" id="awardDescription"></div>
+                    <a href="awards.html" class="back-link">← Back to Awards</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var urlParams = new URLSearchParams(window.location.search);
+        var awardId = urlParams.get('id');
+
+        async function loadAward() {
+            try {
+                var response = await fetch('/api/awards/' + awardId);
+                var award = await response.json();
+                
+                if (!award || award.error) {
+                    document.getElementById('awardTitle').textContent = 'Award Not Found';
+                    return;
+                }
+
+                document.getElementById('awardYear').textContent = award.year;
+                document.getElementById('awardTitle').textContent = award.awardTitle;
+                document.getElementById('recipientName').textContent = award.recipientName;
+                document.getElementById('awardDescription').textContent = award.description;
+                document.title = award.awardTitle + ' | ISTE Telangana';
+
+                if (award.coverImage) {
+                    document.getElementById('awardImage').style.backgroundImage = 'url(' + award.coverImage + ')';
+                    document.getElementById('awardImage').style.backgroundSize = 'cover';
+                    document.getElementById('awardImage').textContent = '';
+                }
+            } catch(e) {
+                document.getElementById('awardTitle').textContent = 'Error loading award';
+            }
+        }
+
+        loadAward();
+    </script>
+</body>
+</html>

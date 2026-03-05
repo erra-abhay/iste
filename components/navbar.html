@@ -1,0 +1,39 @@
+<!-- Shared Navigation Bar -->
+<nav class="main-nav">
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">ISTE</div>
+            <div class="logo-text">Telangana<span>.</span></div>
+        </a>
+        <ul class="nav-menu" id="navMenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="events.html">Events</a></li>
+            <li><a href="awards.html">Awards</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="notifications.html">Notifications</a></li>
+            <li><a href="committee.html">Committee</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="mobile-toggle" id="mobileToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Mobile menu toggle
+    document.getElementById('mobileToggle').addEventListener('click', function() {
+        document.getElementById('navMenu').classList.toggle('active');
+    });
+
+    // Highlight active page
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+        if (link.getAttribute('href') === currentPage) {
+            link.classList.add('active');
+        }
+    });
+</script>

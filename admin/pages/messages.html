@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | ISTE Admin</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #FF6B35;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F7FA;
+            --text-primary: #1A1A2E;
+            --text-secondary: #666666;
+            --danger: #dc3545;
+            --success: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            color: var(--text-primary);
+            background: var(--bg-light);
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary) 0%, #001a33 100%);
+            height: 100vh;
+            color: white;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--secondary);
+        }
+
+        .badge-count {
+            background: var(--secondary);
+            color: white;
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            margin-left: auto;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .stat-pill.total {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .stat-pill.unread {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #ccc;
+            transition: all 0.2s;
+        }
+
+        .message-card.unread {
+            border-left-color: var(--secondary);
+            background: #fffaf5;
+        }
+
+        .message-card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .message-sender {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .message-email {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-left: 10px;
+        }
+
+        .message-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .message-body {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .message-actions button {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-read {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .btn-read:hover {
+            background: #c8e6c9;
+        }
+
+        .btn-delete {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .btn-delete:hover {
+            background: #ffcdd2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>ISTE Telangana</h2>
+            <p>Admin Control Panel</p>
+        </div>
+        <div class="sidebar-menu">
+            <a href="../index.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            <a href="events.html" class="menu-item"><i class="fas fa-calendar-alt"></i><span>Events</span></a>
+            <a href="headlines.html" class="menu-item"><i class="fas fa-newspaper"></i><span>Headlines</span></a>
+            <a href="members.html" class="menu-item"><i class="fas fa-users"></i><span>Members</span></a>
+            <a href="gallery.html" class="menu-item"><i class="fas fa-images"></i><span>Gallery</span></a>
+            <a href="notifications.html" class="menu-item"><i class="fas fa-bell"></i><span>Notifications</span></a>
+            <a href="messages.html" class="menu-item active"><i class="fas fa-envelope"></i><span>Messages</span><span
+                    class="badge-count" id="sidebarUnread" style="display:none;">0</span></a>
+            <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+        </div>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Messages Inbox</h1>
+            <div class="stats-bar">
+                <span class="stat-pill total" id="totalStat">Total: 0</span>
+                <span class="stat-pill unread" id="unreadStat">Unread: 0</span>
+            </div>
+        </div>
+        <div class="message-list" id="messageList">
+            <div class="empty-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading messages...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/messages';
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = '../login.html';
+
+        async function loadMessages() {
+            try {
+                const response = await fetch(API_URL, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!response.ok) throw new Error('Failed to load');
+                const data = await response.json();
+
+                document.getElementById('totalStat').textContent = 'Total: ' + data.pagination.total;
+                document.getElementById('unreadStat').textContent = 'Unread: ' + data.unread;
+
+                var badge = document.getElementById('sidebarUnread');
+                if (data.unread > 0) {
+                    badge.textContent = data.unread;
+                    badge.style.display = 'inline';
+                } else {
+                    badge.style.display = 'none';
+                }
+
+                renderMessages(data.messages);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('messageList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load messages</p></div>';
+            }
+        }
+
+        function renderMessages(messages) {
+            var list = document.getElementById('messageList');
+            if (!messages || messages.length === 0) {
+                list.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>No messages yet. Messages from the Contact Us form will appear here.</p></div>';
+                return;
+            }
+
+            list.innerHTML = messages.map(function (m) {
+                var date = new Date(m.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                var unreadClass = m.isRead ? '' : ' unread';
+                var readBtn = m.isRead ? '' : '<button class="btn-read" onclick="markRead(\'' + m._id + '\')"><i class="fas fa-check"></i> Mark Read</button>';
+
+                return '<div class="message-card' + unreadClass + '">' +
+                    '<div class="message-header">' +
+                    '<div><span class="message-sender">' + m.name + '</span><span class="message-email">' + m.email + '</span></div>' +
+                    '<span class="message-date">' + date + '</span>' +
+                    '</div>' +
+                    '<div class="message-body">' + m.message + '</div>' +
+                    '<div class="message-actions">' + readBtn +
+                    '<button class="btn-delete" onclick="deleteMessage(\'' + m._id + '\')"><i class="fas fa-trash"></i> Delete</button>' +
+                    '</div></div>';
+            }).join('');
+        }
+
+        async function markRead(id) {
+            try {
+                await fetch(API_URL + '/' + id + '/read', {
+                    method: 'PATCH',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                loadMessages();
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        async function deleteMessage(id) {
+            if (!confirm('Delete this message?')) return;
+            try {
+                await fetch(API_URL + '/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                loadMessages();
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = '../login.html';
+        }
+
+        loadMessages();
+    </script>
+</body>
+
+</html>
