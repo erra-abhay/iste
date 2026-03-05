@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
 const connectDB = require('./config/db');
 
@@ -17,17 +17,22 @@ const notificationsRoutes = require('./routes/notifications');
 const awardsRoutes = require('./routes/awards');
 const messagesRoutes = require('./routes/messages');
 
-// Import models for seeding initial admin
+// Import models and middleware
 const Admin = require('./models/Admin');
+const { auth } = require('./middleware/auth');
 
 const app = express();
 
 // Connect to MongoDB
 connectDB();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: false // Let nginx handle CSP
+}));
+
+// Middleware — no CORS needed (nginx proxies all traffic internally)
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files
@@ -53,8 +58,8 @@ app.use('/api/notifications', notificationsRoutes);
 app.use('/api/awards', awardsRoutes);
 app.use('/api/messages', messagesRoutes);
 
-// Dashboard stats route
-app.get('/api/dashboard/stats', async (req, res) => {
+// Dashboard stats route (protected — admin only)
+app.get('/api/dashboard/stats', auth, async (req, res) => {
   try {
     const Event = require('./models/Event');
     const Member = require('./models/Member');
@@ -90,7 +95,8 @@ app.get('/api/dashboard/stats', async (req, res) => {
       unreadMessages: unreadMessages
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Dashboard stats error:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -101,8 +107,9 @@ app.get('/api/health', (req, res) => {
 
 // Create uploads directory if not exists
 const fs = require('fs');
-if (!fs.existsSync('./uploads')) {
-  fs.mkdirSync('./uploads');
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Seed initial admin account
@@ -110,14 +117,15 @@ const seedAdmin = async () => {
   try {
     const adminExists = await Admin.findOne({ email: 'admin@iste-telangana.org' });
     if (!adminExists) {
+      const seedPassword = process.env.ADMIN_SEED_PASSWORD || 'ChangeMe@2025!';
       const admin = new Admin({
         email: 'admin@iste-telangana.org',
-        password: 'isteadmin2025',
+        password: seedPassword,
         name: 'Super Admin',
         role: 'superadmin'
       });
       await admin.save();
-      console.log('Initial admin account created: admin@iste-telangana.org / isteadmin2025');
+      console.log('Initial admin account created: admin@iste-telangana.org');
     }
   } catch (error) {
     console.error('Error seeding admin:', error.message);

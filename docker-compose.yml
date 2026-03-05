@@ -1,7 +1,5 @@
-
-
 services:
-  # MongoDB Database
+  # MongoDB Database (with authentication)
   mongodb:
     image: mongo:7
     container_name: iste-mongodb
@@ -12,6 +10,8 @@ services:
       - iste-network
     environment:
       - MONGO_INITDB_DATABASE=iste_telangana
+      - MONGO_INITDB_ROOT_USERNAME=iste_admin
+      - MONGO_INITDB_ROOT_PASSWORD=M0ng0-S3cur3-P4ss-2025
 
   # Node.js Backend (internal only, accessed via nginx)
   backend:
@@ -22,8 +22,9 @@ services:
       - mongodb
     environment:
       - PORT=5000
-      - MONGO_URI=mongodb://mongodb:27017/iste_telangana
-      - JWT_SECRET=iste_telangana_jwt_secret_key_2025
+      - MONGO_URI=mongodb://iste_admin:M0ng0-S3cur3-P4ss-2025@mongodb:27017/iste_telangana?authSource=admin
+      - JWT_SECRET=xK9mQ2vL7nR4pW8jT5cY1fH6bZ3gN0sA8dE2
+      - ADMIN_SEED_PASSWORD=ChangeMe@2025!
       - NODE_ENV=production
     volumes:
       - uploads-data:/app/backend/uploads
@@ -35,11 +36,16 @@ services:
     image: nginx:alpine
     container_name: iste-nginx
     restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
     depends_on:
       - backend
     ports:
-      - "3000:3000"
-      - "3001:3001"
+      - "127.0.0.1:55521:3000"
+      - "127.0.0.1:55522:3001"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:

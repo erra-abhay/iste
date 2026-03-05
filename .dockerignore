@@ -8,3 +8,7 @@ backend/uploads/*
 !backend/uploads/.gitkeep
 *.md
 .DS_Store
+docker-compose.yml
+nginx.conf
+.project
+.buildpath
