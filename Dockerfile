@@ -13,7 +13,7 @@ COPY . .
 
 # Create uploads directory and set ownership
 RUN mkdir -p backend/uploads && \
-    chown -R node:node /app
+    chown -R node:node backend/uploads
 
 # Expose internal port
 EXPOSE 5000
